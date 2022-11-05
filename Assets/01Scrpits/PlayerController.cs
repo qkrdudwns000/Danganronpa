@@ -31,11 +31,14 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CrosshairMoving();
-        ViewMoving();
-        KeyViewMoving();
-        cameraLimit();
-        NotCamUI();
+        if (!InteractionController.isInteract)
+        {
+            CrosshairMoving();
+            ViewMoving();
+            KeyViewMoving();
+            cameraLimit();
+            NotCamUI();
+        }
     }
 
     void NotCamUI()
@@ -63,10 +66,10 @@ public class PlayerController : MonoBehaviour
         else if (tf_Cam.localPosition.x <= -camBoundary.x)
             tf_Cam.localPosition = new Vector3(-camBoundary.x, tf_Cam.localPosition.y, tf_Cam.localPosition.z);
 
-        if (tf_Cam.localPosition.y >= originPosY)
-            tf_Cam.localPosition = new Vector3(tf_Cam.localPosition.x, originPosY, tf_Cam.localPosition.z);
-        else if (tf_Cam.localPosition.y <= originPosY)
-            tf_Cam.localPosition = new Vector3(tf_Cam.localPosition.x, originPosY, tf_Cam.localPosition.z);
+        if (tf_Cam.localPosition.y >= originPosY + camBoundary.y)
+            tf_Cam.localPosition = new Vector3(tf_Cam.localPosition.x, originPosY + camBoundary.y, tf_Cam.localPosition.z);
+        else if (tf_Cam.localPosition.y <= originPosY - camBoundary.y)
+            tf_Cam.localPosition = new Vector3(tf_Cam.localPosition.x, originPosY - camBoundary.y, tf_Cam.localPosition.z);
     }
 
     void KeyViewMoving()
