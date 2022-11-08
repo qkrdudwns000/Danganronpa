@@ -26,11 +26,13 @@ public class InteractionController : MonoBehaviour
 
     DialogueManger theDM;
 
-    public void HideUI()
+    public void SettingUI(bool p_flag)
     {
-        go_Crosshair.SetActive(false);
-        go_Cursor.SetActive(false);
-        go_TargetNameBar.SetActive(false);
+        go_Crosshair.SetActive(p_flag);
+        go_Cursor.SetActive(p_flag);
+        go_TargetNameBar.SetActive(p_flag);
+
+        isInteract = !p_flag; // 대화하고있을땐 상호작용 꺼주고 대화안하고있을땐 상화작용켜준다
     }
 
     private void Start()
