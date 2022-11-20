@@ -23,10 +23,12 @@ public class DialogueManger : MonoBehaviour
     int contextCount = 0;//대사카운트
 
     InteractionController theIC;
+    CameraController theCam;
 
     private void Start()
     {
         theIC = FindObjectOfType<InteractionController>();
+        theCam = FindObjectOfType<CameraController>();
     }
     private void Update()
     {
@@ -46,7 +48,7 @@ public class DialogueManger : MonoBehaviour
                         contextCount = 0; // 다음대화상대로 넘어갔으니 대화 인덱스초기화
                         if(++lineCount < dialogues.Length)
                         {
-                            StartCoroutine(TypeWriter());
+                            CameraTargettingType();
                         }
                         else // 모든 대화가 끝났을경우
                         {
@@ -65,9 +67,23 @@ public class DialogueManger : MonoBehaviour
         txt_Name.text = "";
         theIC.SettingUI(false);
         dialogues = p_dialogues;
+        theCam.CamOriginSetting();
 
-        SettingUI(false);
+        //SettingUI(false);
+        CameraTargettingType();
+    }
 
+    void CameraTargettingType()
+    {
+        switch (dialogues[lineCount].cameraType)
+        {
+            case CameraType.ObjectFront:
+                theCam.CameraTargetting(dialogues[lineCount].tf_Target);
+                break;
+            case CameraType.Reset:
+                theCam.CameraTargetting(null, 0.05f, true, false);
+                break;
+        }
         StartCoroutine(TypeWriter());
     }
 
@@ -78,8 +94,8 @@ public class DialogueManger : MonoBehaviour
         lineCount = 0;
         dialogues = null;
         isNext = false;
+        theCam.CameraTargetting(null, 0.05f, true, true);
         SettingUI(false);
-        theIC.SettingUI(true);
     }
 
     IEnumerator TypeWriter()
@@ -133,7 +149,11 @@ public class DialogueManger : MonoBehaviour
                 go_DialogueNameBar.SetActive(true);
                 txt_Name.text = dialogues[lineCount].name;
             }
-        }   
+        }
+        else
+        {
+            go_DialogueNameBar.SetActive(false);
+        }
     }
 
 
