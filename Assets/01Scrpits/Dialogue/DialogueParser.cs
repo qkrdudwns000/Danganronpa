@@ -20,10 +20,12 @@ public class DialogueParser : MonoBehaviour
             dialogue.name = row[1];
 
             List<string> contextList = new List<string>();
+            List<string> spriteList = new List<string>();
 
             do
             {
                 contextList.Add(row[2]); // 최초 1회실행.
+                spriteList.Add(row[3]);
 
                 if (++i < data.Length) // i + 1 한 후
                 {
@@ -36,6 +38,7 @@ public class DialogueParser : MonoBehaviour
             } while (row[0].ToString() == ""); // 대사가아닌 id 부분이 공백일경우 do 문 재반복. 그래서 id부분 공백아닐때까지 반복.
 
             dialogue.contexts = contextList.ToArray(); // 리스트이기때문에 배열로 변환해서 다시 넣어줌.
+            dialogue.spriteName = spriteList.ToArray();
 
             dialogueList.Add(dialogue);
         }

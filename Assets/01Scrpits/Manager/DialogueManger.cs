@@ -24,11 +24,15 @@ public class DialogueManger : MonoBehaviour
 
     InteractionController theIC;
     CameraController theCam;
+    SplashManager theSplashManager;
+    SpriteManager theSpriteManager;
 
     private void Start()
     {
         theIC = FindObjectOfType<InteractionController>();
         theCam = FindObjectOfType<CameraController>();
+        theSplashManager = FindObjectOfType<SplashManager>();
+        theSpriteManager = FindObjectOfType<SpriteManager>();
     }
     private void Update()
     {
@@ -48,7 +52,7 @@ public class DialogueManger : MonoBehaviour
                         contextCount = 0; // 다음대화상대로 넘어갔으니 대화 인덱스초기화
                         if(++lineCount < dialogues.Length)
                         {
-                            CameraTargettingType();
+                            StartCoroutine(CameraTargettingType());
                         }
                         else // 모든 대화가 끝났을경우
                         {
@@ -70,13 +74,37 @@ public class DialogueManger : MonoBehaviour
         theCam.CamOriginSetting();
 
         //SettingUI(false);
-        CameraTargettingType();
+        StartCoroutine(CameraTargettingType());
     }
 
-    void CameraTargettingType()
+    IEnumerator CameraTargettingType()
     {
         switch (dialogues[lineCount].cameraType)
         {
+            case CameraType.FadeIn:
+                SettingUI(false);
+                SplashManager.isfinished = false;
+                StartCoroutine(theSplashManager.FadeIn(false, true));
+                yield return new WaitUntil(() => SplashManager.isfinished); // 스플래쉬매니저의 isfinished가 true가될때까지 정체.
+                break;
+            case CameraType.FadeOut:
+                SettingUI(false);
+                SplashManager.isfinished = false;
+                StartCoroutine(theSplashManager.FadeOut(false, true));
+                yield return new WaitUntil(() => SplashManager.isfinished); // 스플래쉬매니저의 isfinished가 true가될때까지 정체.
+                break;
+            case CameraType.FlashIn:
+                SettingUI(false);
+                SplashManager.isfinished = false;
+                StartCoroutine(theSplashManager.FadeIn(true, true));
+                yield return new WaitUntil(() => SplashManager.isfinished); // 스플래쉬매니저의 isfinished가 true가될때까지 정체.
+                break;
+            case CameraType.FlashOut:
+                SettingUI(false);
+                SplashManager.isfinished = false;
+                StartCoroutine(theSplashManager.FadeOut(true, true));
+                yield return new WaitUntil(() => SplashManager.isfinished); // 스플래쉬매니저의 isfinished가 true가될때까지 정체.
+                break;
             case CameraType.ObjectFront:
                 theCam.CameraTargetting(dialogues[lineCount].tf_Target);
                 break;
@@ -98,9 +126,17 @@ public class DialogueManger : MonoBehaviour
         SettingUI(false);
     }
 
+    void ChangeSprite()
+    {
+        if (dialogues[lineCount].spriteName[contextCount] != "") // 해당칸이 여백이아닐때만
+        {
+            StartCoroutine(theSpriteManager.SpriteChangeCoroutine(dialogues[lineCount].tf_Target, dialogues[lineCount].spriteName[contextCount].Trim()));
+        }
+    }
     IEnumerator TypeWriter()
     {
         SettingUI(true);
+        ChangeSprite();
 
         string t_ReplaceText = dialogues[lineCount].contexts[contextCount];
         t_ReplaceText = t_ReplaceText.Replace("'", ","); // 액셀에서 임의로 콤마자리에썻던 (') 를 (,) 로 치환해주는 함수.
